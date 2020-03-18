@@ -22,7 +22,7 @@ endif()
 if (DESKTOP_APP_USE_PACKAGED)
     target_link_libraries(external_opus INTERFACE ${OPUS_LIBRARIES})
 elseif (WIN32)
-    set(opus_lib_loc ${libs_loc}/opus/win32/VS2015/Win32/$<IF:$<CONFIG:Debug>,Debug,Release>)
+    set(opus_lib_loc ${libs_loc}/opus/win32/VS2015/x64/$<IF:$<CONFIG:Debug>,Debug,Release>)
 
     target_link_libraries(external_opus
     INTERFACE

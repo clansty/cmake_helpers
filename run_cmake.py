@@ -19,7 +19,7 @@ def run(project, arguments, buildType=''):
             cmake.append(arg)
 
     if sys.platform == 'win32':
-        cmake.append('-AWin32')
+        cmake.append('-Ax64')
     elif sys.platform == 'darwin':
         cmake.append('-GXcode')
     elif buildType:

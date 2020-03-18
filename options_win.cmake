@@ -12,13 +12,14 @@ INTERFACE
     NOMINMAX
     UNICODE
     _UNICODE
+    _FILE_OFFSET_BITS=64
 )
 target_compile_options(common_options
 INTERFACE
     /permissive-
     # /Qspectre
     /W1
-    /WX
+    /WX-
     /MP     # Enable multi process build.
     /EHsc   # Catch C++ exceptions only, extern C functions never throw a C++ exception.
     /w14834 # [[nodiscard]]
@@ -27,6 +28,7 @@ INTERFACE
     /wd4068 # Disable "warning C4068: unknown pragma"
     /Zc:wchar_t- # don't tread wchar_t as builtin type
     /Zi
+	/bigobj
 )
 
 target_link_options(common_options

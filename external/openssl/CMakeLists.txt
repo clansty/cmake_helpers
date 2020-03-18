@@ -30,7 +30,7 @@ else()
 
     if (WIN32)
         set(openssl_lib_ext lib)
-        set(openssl_lib_loc ${libs_loc}/openssl_1_1_1/out32$<$<CONFIG:Debug>:.dbg>)
+        set(openssl_lib_loc ${libs_loc}/openssl_1_1_1/out64$<$<CONFIG:Debug>:.dbg>)
     else()
         set(openssl_lib_ext a)
         if (APPLE)
