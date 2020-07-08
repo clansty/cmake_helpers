@@ -49,7 +49,7 @@ if (DESKTOP_APP_SPECIAL_TARGET STREQUAL ""
     OR DESKTOP_APP_SPECIAL_TARGET STREQUAL "macstore")
     set(disable_autoupdate 1)
 endif()
-option(DESKTOP_APP_DISABLE_AUTOUPDATE "Disable autoupdate." ${disable_autoupdate})
+# option(DESKTOP_APP_DISABLE_AUTOUPDATE "Disable autoupdate." ${disable_autoupdate})
 
 set(add_hunspell_library 0)
 if ((WIN32
