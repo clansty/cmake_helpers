@@ -23,6 +23,7 @@ INTERFACE
     -Wno-parentheses
     -Wno-stringop-overflow
     -Wno-maybe-uninitialized
+    -Wno-error=reorder
     -Wno-error=class-memaccess
 )
 if (NOT DESKTOP_APP_USE_PACKAGED)
