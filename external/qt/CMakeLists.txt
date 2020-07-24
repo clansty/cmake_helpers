@@ -57,6 +57,15 @@ if (DESKTOP_APP_USE_PACKAGED)
         )
     endif()
 
+    if (Qt5XkbCommonSupport_FOUND)
+        target_link_libraries(external_qt INTERFACE Qt5::XkbCommonSupport)
+
+        target_include_directories(external_qt
+        INTERFACE
+            ${Qt5XkbCommonSupport_PRIVATE_INCLUDE_DIRS}
+        )
+    endif()
+
     if (Qt5WaylandClient_FOUND)
         target_link_libraries(external_qt INTERFACE Qt5::WaylandClient)
 
@@ -97,6 +106,15 @@ else()
         )
     endif()
 
+    if (Qt5XkbCommonSupport_FOUND)
+        target_include_directories(external_qt SYSTEM
+        INTERFACE
+            ${qt_loc}/include/QtXkbCommonSupport
+            ${qt_loc}/include/QtXkbCommonSupport/${qt_version}
+            ${qt_loc}/include/QtXkbCommonSupport/${qt_version}/QtXkbCommonSupport
+        )
+    endif()
+
     if (LINUX)
         target_include_directories(external_qt SYSTEM
         INTERFACE
@@ -126,6 +144,13 @@ else()
         target_compile_definitions(external_qt
         INTERFACE
             QT_DBUS_LIB
+        )
+    endif()
+
+    if (Qt5XkbCommonSupport_FOUND)
+        target_compile_definitions(external_qt
+        INTERFACE
+            QT_XKBCOMMON_SUPPORT_LIB
         )
     endif()
 
@@ -277,6 +302,8 @@ else()
     target_link_libraries(external_qt
     INTERFACE
         ${qt_libs_list}
+        $<TARGET_FILE:desktop-app::external_openssl_ssl>
+        $<TARGET_FILE:desktop-app::external_openssl_crypto>
     )
 
     if (LINUX)
@@ -330,7 +357,6 @@ else()
         if (DESKTOP_APP_USE_GLIBC_WRAPS)
             target_link_libraries(external_qt
             INTERFACE
-                desktop-app::linux_glibc_wraps
                 $<TARGET_FILE:desktop-app::linux_glibc_wraps>
             )
         endif()
