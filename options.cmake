@@ -19,6 +19,13 @@ if (DESKTOP_APP_DISABLE_CRASH_REPORTS)
     )
 endif()
 
+if (DESKTOP_APP_DISABLE_DBUS_INTEGRATION)
+    target_compile_definitions(common_options
+    INTERFACE
+        DESKTOP_APP_DISABLE_DBUS_INTEGRATION
+    )
+endif()
+
 if (DESKTOP_APP_USE_PACKAGED)
     target_compile_definitions(common_options
     INTERFACE
@@ -47,7 +54,7 @@ if (DESKTOP_APP_USE_PACKAGED_FONTS)
     )
 endif()
 
-if (DESKTOP_APP_USE_PACKAGED_RLOTTIE)
+if (rlottie_FOUND OR RLOTTIE_FOUND)
     target_compile_definitions(common_options
     INTERFACE
         DESKTOP_APP_USE_PACKAGED_RLOTTIE
