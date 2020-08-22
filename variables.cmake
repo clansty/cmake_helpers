@@ -19,8 +19,15 @@ if (DESKTOP_APP_SPECIAL_TARGET STREQUAL "osx")
     set(osx_special_target 1)
 endif()
 
+set(disable_autoupdate 0)
+if (DESKTOP_APP_SPECIAL_TARGET STREQUAL ""
+    OR DESKTOP_APP_SPECIAL_TARGET STREQUAL "uwp"
+    OR DESKTOP_APP_SPECIAL_TARGET STREQUAL "macstore")
+    set(disable_autoupdate 1)
+endif()
+
 set(webrtc_not_supported 0)
-if (osx_special_target OR (LINUX AND CMAKE_SIZEOF_VOID_P EQUAL 4))
+if (LINUX AND CMAKE_SIZEOF_VOID_P EQUAL 4)
     set(webrtc_not_supported 1)
 endif()
 
@@ -31,24 +38,14 @@ option(DESKTOP_APP_USE_GLIBC_WRAPS "Use wraps for new GLIBC features." ${linux_s
 option(DESKTOP_APP_USE_PACKAGED "Find libraries using CMake instead of exact paths." ${no_special_target})
 option(DESKTOP_APP_USE_PACKAGED_LAZY "Bundle recommended Qt plugins for self-contained packages. (Linux only)" OFF)
 option(DESKTOP_APP_USE_PACKAGED_LAZY_PLATFORMTHEMES "Bundle recommended Qt platform themes for self-contained packages. (Linux only)" ${DESKTOP_APP_USE_PACKAGED_LAZY})
+option(DESKTOP_APP_USE_PACKAGED_FFMPEG_STATIC "Link ffmpeg statically in packaged mode." OFF)
 option(DESKTOP_APP_DISABLE_SPELLCHECK "Disable spellcheck library." ${osx_special_target})
 option(DESKTOP_APP_DISABLE_CRASH_REPORTS "Disable crash report generation." ${no_special_target})
-option(DESKTOP_APP_USE_PACKAGED_FFMPEG_STATIC "Link found ffmpeg statically." OFF)
+option(DESKTOP_APP_DISABLE_AUTOUPDATE "Disable autoupdate." ${disable_autoupdate})
 option(DESKTOP_APP_USE_HUNSPELL_ONLY "Disable system spellchecker and use bundled Hunspell only. (For debugging purposes)" OFF)
 option(DESKTOP_APP_USE_ENCHANT "Use Enchant instead of bundled Hunspell. (Linux only)" OFF)
-
-option(DESKTOP_APP_ENABLE_IPO_OPTIMIZATIONS "Enable IPO build optimizations." ${WIN32})
-if (DESKTOP_APP_ENABLE_IPO_OPTIMIZATIONS AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    message(WARNING "Clang cannot build Qt applications with IPO enabled due to upstream bug: https://bugreports.qt.io/browse/QTBUG-61710.")
-    set(DESKTOP_APP_ENABLE_IPO_OPTIMIZATIONS OFF)
-endif()
-
-set(disable_autoupdate 0)
-if (DESKTOP_APP_SPECIAL_TARGET STREQUAL ""
-    OR DESKTOP_APP_SPECIAL_TARGET STREQUAL "uwp"
-    OR DESKTOP_APP_SPECIAL_TARGET STREQUAL "macstore")
-    set(disable_autoupdate 1)
-endif()
+set(DESKTOP_APP_QTWAYLANDCLIENT_PRIVATE_HEADERS "" CACHE STRING "QtWaylandClient headers location.")
+set(DESKTOP_APP_WEBRTC_LOCATION "" CACHE STRING "WebRTC source root location.")
 # option(DESKTOP_APP_DISABLE_AUTOUPDATE "Disable autoupdate." ${disable_autoupdate})
 
 set(dont_bundle_fonts 0)
@@ -93,7 +90,7 @@ else()
             report_bad_special_target()
         endif()
     endif()
-    if (DESKTOP_APP_SPECIAL_TARGET OR DESKTOP_APP_ENABLE_IPO_OPTIMIZATIONS)
+    if (DESKTOP_APP_SPECIAL_TARGET)
         set(CMAKE_AR "gcc-ar")
         set(CMAKE_RANLIB "gcc-ranlib")
         set(CMAKE_NM "gcc-nm")

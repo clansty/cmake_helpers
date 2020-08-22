@@ -17,7 +17,7 @@ endfunction()
 
 function(init_target target_name) # init_target(my_target folder_name)
     if (ARGC GREATER 1)
-        if (${ARGV1} STREQUAL cxx_std_14 OR ${ARGV1} STREQUAL cxx_std_11)
+        if (${ARGV1} STREQUAL cxx_std_14 OR ${ARGV1} STREQUAL cxx_std_11 OR ${ARGV1} STREQUAL cxx_std_17)
             target_compile_features(${target_name} PUBLIC ${ARGV1})
         else()
             target_compile_features(${target_name} PUBLIC ${MAXIMUM_CXX_STANDARD})
@@ -45,7 +45,7 @@ function(init_target target_name) # init_target(my_target folder_name)
             XCODE_ATTRIBUTE_LLVM_LTO $<IF:$<CONFIG:Debug>,NO,YES>
         )
     endif()
-    if (DESKTOP_APP_ENABLE_IPO_OPTIMIZATIONS)
+    if (DESKTOP_APP_SPECIAL_TARGET AND WIN32)
         set_target_properties(${target_name} PROPERTIES
             INTERPROCEDURAL_OPTIMIZATION_RELEASE True
             INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO True
