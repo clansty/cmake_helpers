@@ -41,12 +41,11 @@ option(DESKTOP_APP_USE_PACKAGED_LAZY_PLATFORMTHEMES "Bundle recommended Qt platf
 option(DESKTOP_APP_USE_PACKAGED_FFMPEG_STATIC "Link ffmpeg statically in packaged mode." OFF)
 option(DESKTOP_APP_DISABLE_SPELLCHECK "Disable spellcheck library." ${osx_special_target})
 option(DESKTOP_APP_DISABLE_CRASH_REPORTS "Disable crash report generation." ${no_special_target})
-option(DESKTOP_APP_DISABLE_AUTOUPDATE "Disable autoupdate." ${disable_autoupdate})
+# option(DESKTOP_APP_DISABLE_AUTOUPDATE "Disable autoupdate." ${disable_autoupdate})
 option(DESKTOP_APP_USE_HUNSPELL_ONLY "Disable system spellchecker and use bundled Hunspell only. (For debugging purposes)" OFF)
 option(DESKTOP_APP_USE_ENCHANT "Use Enchant instead of bundled Hunspell. (Linux only)" OFF)
 set(DESKTOP_APP_QTWAYLANDCLIENT_PRIVATE_HEADERS "" CACHE STRING "QtWaylandClient headers location.")
 set(DESKTOP_APP_WEBRTC_LOCATION "" CACHE STRING "WebRTC source root location.")
-# option(DESKTOP_APP_DISABLE_AUTOUPDATE "Disable autoupdate." ${disable_autoupdate})
 
 set(dont_bundle_fonts 0)
 if (DESKTOP_APP_USE_PACKAGED AND NOT DESKTOP_APP_USE_PACKAGED_LAZY)
