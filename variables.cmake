@@ -26,14 +26,9 @@ if (DESKTOP_APP_SPECIAL_TARGET STREQUAL ""
     set(disable_autoupdate 1)
 endif()
 
-set(webrtc_not_supported 0)
-if (LINUX AND CMAKE_SIZEOF_VOID_P EQUAL 4)
-    set(webrtc_not_supported 1)
-endif()
-
 option(DESKTOP_APP_LOTTIE_USE_CACHE "Use caching in lottie animations." ON)
 option(DESKTOP_APP_DISABLE_DBUS_INTEGRATION "Disable all code for D-Bus integration (Linux only)." OFF)
-option(DESKTOP_APP_DISABLE_WEBRTC_INTEGRATION "Disable all code for WebRTC integration." ${webrtc_not_supported})
+option(DESKTOP_APP_DISABLE_WEBRTC_INTEGRATION "Disable all code for WebRTC integration." OFF)
 option(DESKTOP_APP_USE_GLIBC_WRAPS "Use wraps for new GLIBC features." ${linux_special_target})
 option(DESKTOP_APP_USE_PACKAGED "Find libraries using CMake instead of exact paths." ${no_special_target})
 option(DESKTOP_APP_USE_PACKAGED_LAZY "Bundle recommended Qt plugins for self-contained packages. (Linux only)" OFF)
@@ -45,7 +40,6 @@ option(DESKTOP_APP_DISABLE_CRASH_REPORTS "Disable crash report generation." ${no
 option(DESKTOP_APP_USE_HUNSPELL_ONLY "Disable system spellchecker and use bundled Hunspell only. (For debugging purposes)" OFF)
 option(DESKTOP_APP_USE_ENCHANT "Use Enchant instead of bundled Hunspell. (Linux only)" OFF)
 set(DESKTOP_APP_QTWAYLANDCLIENT_PRIVATE_HEADERS "" CACHE STRING "QtWaylandClient headers location.")
-set(DESKTOP_APP_WEBRTC_LOCATION "" CACHE STRING "WebRTC source root location.")
 
 set(dont_bundle_fonts 0)
 if (DESKTOP_APP_USE_PACKAGED AND NOT DESKTOP_APP_USE_PACKAGED_LAZY)
