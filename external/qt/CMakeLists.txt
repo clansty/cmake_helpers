@@ -113,16 +113,22 @@ else()
         )
     endif()
 
+    if (Qt5WaylandClient_FOUND)
+        target_include_directories(external_qt SYSTEM
+        INTERFACE
+            ${qt_loc}/include/QtWaylandClient
+            ${qt_loc}/include/QtWaylandClient/${qt_version}
+            ${qt_loc}/include/QtWaylandClient/${qt_version}/QtWaylandClient
+        )
+    endif()
+
     if (LINUX)
         target_include_directories(external_qt SYSTEM
         INTERFACE
             ${qt_loc}/include/QtSvg
             ${qt_loc}/include/QtThemeSupport
-            ${qt_loc}/include/QtWaylandClient
             ${qt_loc}/include/QtThemeSupport/${qt_version}
-            ${qt_loc}/include/QtWaylandClient/${qt_version}
             ${qt_loc}/include/QtThemeSupport/${qt_version}/QtThemeSupport
-            ${qt_loc}/include/QtWaylandClient/${qt_version}/QtWaylandClient
         )
     endif()
 
@@ -151,10 +157,16 @@ else()
         )
     endif()
 
-    if (LINUX)
+    if (Qt5WaylandClient_FOUND)
         target_compile_definitions(external_qt
         INTERFACE
             QT_WAYLANDCLIENT_LIB
+        )
+    endif()
+
+    if (LINUX)
+        target_compile_definitions(external_qt
+        INTERFACE
             QT_THEME_SUPPORT_LIB
             QT_SVG_LIB
         )
@@ -261,21 +273,29 @@ else()
                 plugins/bearer/${qt_lib_prefix}qnmbearer
             )
         endif()
+        set(qt_libs_waylandclient)
+        set(qt_libs_waylandclient_plugins)
+        if (Qt5WaylandClient_FOUND)
+            set(qt_libs_waylandclient lib/${qt_lib_prefix}Qt5WaylandClient)
+            set(qt_libs_waylandclient_plugins
+                plugins/wayland-decoration-client/${qt_lib_prefix}bradient
+                plugins/wayland-shell-integration/${qt_lib_prefix}ivi-shell
+                plugins/wayland-shell-integration/${qt_lib_prefix}wl-shell
+                plugins/wayland-shell-integration/${qt_lib_prefix}xdg-shell-v5
+                plugins/wayland-shell-integration/${qt_lib_prefix}xdg-shell-v6
+                plugins/wayland-shell-integration/${qt_lib_prefix}xdg-shell
+                plugins/wayland-graphics-integration-client/${qt_lib_prefix}qt-plugin-wayland-egl
+                plugins/wayland-graphics-integration-client/${qt_lib_prefix}drm-egl-server
+                plugins/wayland-graphics-integration-client/${qt_lib_prefix}dmabuf-server
+                plugins/wayland-graphics-integration-client/${qt_lib_prefix}shm-emulation-server
+                plugins/platforms/${qt_lib_prefix}qwayland-egl
+                plugins/platforms/${qt_lib_prefix}qwayland-generic
+            )
+        endif()
         set(qt_libs
             plugins/platforminputcontexts/${qt_lib_prefix}composeplatforminputcontextplugin
             ${qt_libs_dbus_plugins}
-            plugins/wayland-decoration-client/${qt_lib_prefix}bradient
-            plugins/wayland-shell-integration/${qt_lib_prefix}ivi-shell
-            plugins/wayland-shell-integration/${qt_lib_prefix}wl-shell
-            plugins/wayland-shell-integration/${qt_lib_prefix}xdg-shell-v5
-            plugins/wayland-shell-integration/${qt_lib_prefix}xdg-shell-v6
-            plugins/wayland-shell-integration/${qt_lib_prefix}xdg-shell
-            plugins/wayland-graphics-integration-client/${qt_lib_prefix}qt-plugin-wayland-egl
-            plugins/wayland-graphics-integration-client/${qt_lib_prefix}drm-egl-server
-            plugins/wayland-graphics-integration-client/${qt_lib_prefix}dmabuf-server
-            plugins/wayland-graphics-integration-client/${qt_lib_prefix}shm-emulation-server
-            plugins/platforms/${qt_lib_prefix}qwayland-egl
-            plugins/platforms/${qt_lib_prefix}qwayland-generic
+            ${qt_libs_waylandclient_plugins}
             plugins/platforms/${qt_lib_prefix}qxcb
             plugins/imageformats/${qt_lib_prefix}qsvg
             plugins/iconengines/${qt_lib_prefix}qsvgicon
@@ -287,13 +307,13 @@ else()
             ${qt_libs_dbus_support}
             plugins/bearer/${qt_lib_prefix}qgenericbearer
             ${qt_libs_dbus_bearers}
-            lib/${qt_lib_prefix}Qt5WaylandClient
+            ${qt_libs_waylandclient}
+            lib/${qt_lib_prefix}Qt5ServiceSupport
             ${common_qt_libs}
             ${qt_libs_dbus}
             lib/${qt_lib_prefix}Qt5Svg
             lib/${qt_lib_prefix}Qt5Core
             lib/${qt_lib_prefix}qtpcre2
-            lib/${qt_lib_prefix}xcb-static
         )
         foreach (lib ${qt_libs})
             list(APPEND qt_libs_list "${qt_loc}/${lib}${qt_lib_suffix}")
@@ -345,10 +365,22 @@ else()
             wayland-client
             xkbcommon
             xkbcommon-x11
-            Xi
             Xext
-            Xfixes
-            Xrender
+            xcb-xkb
+            xcb-randr
+            xcb-icccm
+            xcb-shm
+            xcb-render
+            xcb-image
+            xcb-xfixes
+            xcb-xinerama
+            xcb-xinput
+            xcb-shape
+            xcb-sync
+            xcb-util
+            xcb-render-util
+            xcb-keysyms
+            xcb-record
             ffi
         )
         if (DESKTOP_APP_USE_GLIBC_WRAPS)
