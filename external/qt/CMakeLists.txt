@@ -7,6 +7,8 @@
 add_library(external_qt INTERFACE IMPORTED GLOBAL)
 add_library(desktop-app::external_qt ALIAS external_qt)
 
+add_subdirectory(qt_static_plugins)
+
 if (DESKTOP_APP_USE_PACKAGED)
     target_link_libraries(external_qt
     INTERFACE
@@ -266,7 +268,6 @@ else()
             set(qt_libs_waylandclient lib/${qt_lib_prefix}Qt5WaylandClient)
             set(qt_libs_waylandclient_plugins
                 plugins/wayland-decoration-client/${qt_lib_prefix}bradient
-                plugins/wayland-shell-integration/${qt_lib_prefix}ivi-shell
                 plugins/wayland-shell-integration/${qt_lib_prefix}wl-shell
                 plugins/wayland-shell-integration/${qt_lib_prefix}xdg-shell
                 plugins/wayland-graphics-integration-client/${qt_lib_prefix}qt-plugin-wayland-egl
@@ -380,8 +381,8 @@ else()
             xcb
             X11
             X11-xcb
-            dl
             glib-2.0
+            ${CMAKE_DL_LIBS}
             pthread
         )
     endif()
