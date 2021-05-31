@@ -325,6 +325,23 @@ else()
             -pthread
             -rdynamic
         )
+        if (DESKTOP_APP_USE_ALLOCATION_TRACER)
+            target_link_options(external_qt
+            INTERFACE
+                # -Wl,-wrap,__malloc
+                -Wl,-wrap,__libc_malloc
+                -Wl,-wrap,malloc
+                -Wl,-wrap,valloc
+                -Wl,-wrap,pvalloc
+                -Wl,-wrap,calloc
+                -Wl,-wrap,realloc
+                -Wl,-wrap,memalign
+                -Wl,-wrap,aligned_alloc
+                -Wl,-wrap,posix_memalign
+                -Wl,-wrap,free
+                -Wl,--no-as-needed,-lrt
+            )
+        endif()
         if (DESKTOP_APP_USE_GLIBC_WRAPS)
             target_link_options(external_qt
             INTERFACE
@@ -347,9 +364,7 @@ else()
         endif()
         target_link_static_libraries(external_qt
         INTERFACE
-            wayland-egl
-            wayland-cursor
-            wayland-client
+            proxy
             xkbcommon
             xkbcommon-x11
             xcb-glx
@@ -367,13 +382,26 @@ else()
             xcb-util
             xcb-render-util
             xcb-keysyms
-            ffi
         )
+        if (DESKTOP_APP_USE_ALLOCATION_TRACER)
+            target_link_libraries(external_qt
+            INTERFACE
+                desktop-app::linux_allocation_tracer
+                $<TARGET_FILE:desktop-app::linux_allocation_tracer>
+            )
+        endif()
         if (DESKTOP_APP_USE_GLIBC_WRAPS)
             target_link_libraries(external_qt
             INTERFACE
                 desktop-app::linux_glibc_wraps
                 $<TARGET_FILE:desktop-app::linux_glibc_wraps>
+            )
+        endif()
+        if (Qt5WaylandClient_FOUND)
+            target_link_libraries(external_qt
+            INTERFACE
+                desktop-app::linux_wayland_helper
+                $<TARGET_FILE:desktop-app::linux_wayland_helper>
             )
         endif()
         target_link_libraries(external_qt
