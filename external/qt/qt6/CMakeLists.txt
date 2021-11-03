@@ -159,6 +159,7 @@ else()
             lib/${qt_lib_prefix}Qt6BundledFreetype
             plugins/platforms/${qt_lib_prefix}qcocoa
             plugins/tls/${qt_lib_prefix}qsecuretransportbackend
+            plugins/networkinformation/${qt_lib_prefix}qscnetworkreachability
         )
         foreach (lib ${qt_libs})
             list(APPEND qt_libs_list "${qt_loc}/${lib}${qt_lib_suffix}")
@@ -264,6 +265,8 @@ else()
         endif()
         target_link_libraries(external_qt
         INTERFACE
+            desktop-app::linux_xcb_helper
+            $<TARGET_FILE:desktop-app::linux_xcb_helper>
             desktop-app::linux_gtk_helper
             $<TARGET_FILE:desktop-app::linux_gtk_helper>
             desktop-app::linux_glib_helper
