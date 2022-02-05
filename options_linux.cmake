@@ -65,7 +65,8 @@ endif()
 
 target_link_libraries(common_options
 INTERFACE
-    desktop-app::external_jemalloc
+    desktop-app::linux_jemalloc_helper
+    $<TARGET_OBJECTS:desktop-app::linux_jemalloc_helper>
     ${CMAKE_DL_LIBS}
 )
 
@@ -87,7 +88,8 @@ if (DESKTOP_APP_USE_ALLOCATION_TRACER)
     )
     target_link_libraries(common_options
     INTERFACE
-        $<LINK_ONLY:desktop-app::linux_allocation_tracer>
+        desktop-app::linux_allocation_tracer
+        $<TARGET_FILE:desktop-app::linux_allocation_tracer>
     )
 endif()
 

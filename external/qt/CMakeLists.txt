@@ -27,6 +27,7 @@ if (DESKTOP_APP_USE_PACKAGED)
     INTERFACE
         ${Qt5Core_PRIVATE_INCLUDE_DIRS}
         ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+        ${Qt5Widgets_PRIVATE_INCLUDE_DIRS}
     )
 
     if (Qt5DBus_FOUND)
@@ -293,12 +294,12 @@ if (LINUX)
     if (NOT DESKTOP_APP_DISABLE_WAYLAND_INTEGRATION)
         target_link_libraries(external_qt
         INTERFACE
-            $<LINK_ONLY:desktop-app::linux_wayland_helper>
+            desktop-app::linux_wayland_helper
         )
     endif()
     target_link_libraries(external_qt
     INTERFACE
-        $<LINK_ONLY:desktop-app::linux_xcb_helper>
+        desktop-app::linux_xcb_helper
         fontconfig
         freetype
         xcb
