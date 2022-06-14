@@ -27,7 +27,6 @@ if (DESKTOP_APP_USE_PACKAGED)
     INTERFACE
         ${Qt5Core_PRIVATE_INCLUDE_DIRS}
         ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-        ${Qt5Widgets_PRIVATE_INCLUDE_DIRS}
     )
 
     if (Qt5DBus_FOUND)
@@ -210,6 +209,7 @@ else()
         set(qt_libs_dbus_support lib/${qt_lib_prefix}Qt5LinuxAccessibilitySupport)
         set(qt_libs_dbus_plugins
             plugins/platforminputcontexts/${qt_lib_prefix}ibusplatforminputcontextplugin
+            plugins/platformthemes/${qt_lib_prefix}qxdgdesktopportal
         )
         set(qt_libs_dbus_bearers
             plugins/bearer/${qt_lib_prefix}qconnmanbearer
