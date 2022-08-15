@@ -17,6 +17,7 @@ INTERFACE
     -Wno-missing-field-initializers
     -Wno-sign-compare
     -Wno-deprecated # implicit capture of 'this' via '[=]' is deprecated in C++20
+    -Wno-deprecated-declarations # TODO: Remove when there will be no Qt 5 support
 )
 
 target_compile_definitions(common_options
@@ -36,14 +37,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         -fstack-clash-protection
         -Wno-maybe-uninitialized
     -Wno-error=reorder
-    )
-endif()
-
-# TODO: Remove when there will be no Qt 5 support
-if (DESKTOP_APP_QT6)
-    target_compile_options(common_options
-    INTERFACE
-        -Wno-deprecated-declarations
     )
 endif()
 
