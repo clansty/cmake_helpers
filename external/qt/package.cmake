@@ -5,7 +5,13 @@
 # https://github.com/desktop-app/legal/blob/master/LEGAL
 
 if (NOT DESKTOP_APP_USE_PACKAGED)
-    set(qt_version $ENV{QT})
+    if (DEFINED ENV{QT})
+        set(qt_version $ENV{QT} CACHE STRING "Qt version" FORCE)
+    endif()
+
+    if (NOT DEFINED qt_version)
+        message(FATAL_ERROR "Qt version is unknown, set `QT' environment variable")
+    endif()
 
     if (WIN32)
         set(qt_loc ${libs_loc}/Qt-${qt_version})
@@ -36,11 +42,6 @@ cmake_dependent_option(DESKTOP_APP_DISABLE_WAYLAND_INTEGRATION "Disable all code
 if (LINUX)
     if (NOT DESKTOP_APP_DISABLE_WAYLAND_INTEGRATION)
         find_package(Qt${QT_VERSION_MAJOR} COMPONENTS WaylandClient REQUIRED)
-        if (QT_VERSION_MAJOR GREATER_EQUAL 6)
-            find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS WaylandGlobalPrivate QUIET)
-        else()
-            find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS XkbCommonSupport QUIET)
-        endif()
     endif()
 
     if ((NOT DESKTOP_APP_USE_PACKAGED
