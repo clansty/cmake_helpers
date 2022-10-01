@@ -6,14 +6,20 @@
 
 target_compile_options(common_options
 INTERFACE
-    -fstack-protector-all
-    -fPIC
     $<IF:$<CONFIG:Debug>,,-fno-strict-aliasing>
+)
+
+target_compile_options_if_exists(common_options
+INTERFACE
+    -fstack-protector-all
+    -fstack-clash-protection
+    -fPIC
     -pipe
     -Wall
     -Wextra
     -Wno-unused-parameter
     -Wno-switch
+    -Wno-maybe-uninitialized
     -Wno-missing-field-initializers
     -Wno-sign-compare
     -Wno-deprecated # implicit capture of 'this' via '[=]' is deprecated in C++20
@@ -26,20 +32,13 @@ INTERFACE
     _GLIBCXX_ASSERTIONS
 )
 
-target_link_options(common_options
+target_link_options_if_exists(common_options
 INTERFACE
+    -pthread
     -Wl,--as-needed
 )
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(common_options
-    INTERFACE
-        -fstack-clash-protection
-        -Wno-maybe-uninitialized
     -Wno-error=reorder
-    )
-endif()
-
 if (DESKTOP_APP_SPECIAL_TARGET)
     target_compile_options(common_options
     INTERFACE
@@ -56,6 +55,34 @@ if (DESKTOP_APP_SPECIAL_TARGET)
     target_link_options(common_options INTERFACE $<IF:$<CONFIG:Debug>,,-g -s -fuse-linker-plugin>)
 endif()
 
+if (NOT DESKTOP_APP_USE_PACKAGED)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_link_options(common_options
+        INTERFACE
+            -static-libstdc++
+            -static-libgcc
+        )
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        target_link_static_libraries(common_options
+        INTERFACE
+            c++
+            c++abi
+        )
+        target_link_options(common_options
+        INTERFACE
+            -nostdlib++
+        )
+    endif()
+    target_link_options(common_options
+    INTERFACE
+        -rdynamic
+        -fwhole-program
+        -Wl,-z,relro
+        -Wl,-z,now
+        # -pie # https://gitlab.gnome.org/GNOME/nautilus/-/issues/1601
+    )
+endif()
+
 if (NOT DESKTOP_APP_DISABLE_JEMALLOC)
 	target_link_libraries(common_options
 	INTERFACE
@@ -63,11 +90,6 @@ if (NOT DESKTOP_APP_DISABLE_JEMALLOC)
 	    $<LINK_ONLY:desktop-app::external_jemalloc>
 	)
 endif()
-
-target_link_libraries(common_options
-INTERFACE
-    ${CMAKE_DL_LIBS}
-)
 
 if (DESKTOP_APP_USE_ALLOCATION_TRACER)
     target_link_options(common_options
@@ -92,38 +114,7 @@ if (DESKTOP_APP_USE_ALLOCATION_TRACER)
     )
 endif()
 
-if (DESKTOP_APP_USE_PACKAGED)
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
-    find_package(Threads REQUIRED)
-    target_link_libraries(common_options
-    INTERFACE
-        Threads::Threads
-    )
-else()
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        target_link_options(common_options
-        INTERFACE
-            -static-libstdc++
-            -static-libgcc
-        )
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        target_link_static_libraries(common_options
-        INTERFACE
-            c++
-            c++abi
-        )
-        target_link_options(common_options
-        INTERFACE
-            -nostdlib++
-        )
-    endif()
-    target_link_options(common_options
-    INTERFACE
-        -pthread
-        -rdynamic
-        -fwhole-program
-        -Wl,-z,relro
-        -Wl,-z,now
-        # -pie # https://gitlab.gnome.org/GNOME/nautilus/-/issues/1601
-    )
-endif()
+target_link_libraries(common_options
+INTERFACE
+    ${CMAKE_DL_LIBS}
+)

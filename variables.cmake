@@ -34,8 +34,8 @@ cmake_dependent_option(DESKTOP_APP_USE_ENCHANT "Use Enchant instead of bundled H
 cmake_dependent_option(DESKTOP_APP_NO_PDB "Disable PDB file generation." OFF WIN32 OFF)
 cmake_dependent_option(DESKTOP_APP_DISABLE_JEMALLOC "Disable jemalloc, use system malloc." OFF LINUX OFF)
 
-if (APPLE)
-    if (DESKTOP_APP_USE_PACKAGED AND DEFINED CMAKE_OSX_ARCHITECTURES)
+if (APPLE AND NOT DEFINED DESKTOP_APP_MAC_ARCH)
+    if (DEFINED CMAKE_OSX_ARCHITECTURES)
         set(DESKTOP_APP_MAC_ARCH "${CMAKE_OSX_ARCHITECTURES}" CACHE STRING "Target macOS arch.")
     else()
         set(DESKTOP_APP_MAC_ARCH "x86_64;arm64" CACHE STRING "Target macOS arch.")
