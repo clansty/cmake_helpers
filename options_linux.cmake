@@ -24,6 +24,7 @@ INTERFACE
     -Wno-sign-compare
     -Wno-deprecated # implicit capture of 'this' via '[=]' is deprecated in C++20
     -Wno-deprecated-declarations # TODO: Remove when there will be no Qt 5 support
+    -Wno-error=reorder
 )
 
 target_compile_definitions(common_options
@@ -38,7 +39,6 @@ INTERFACE
     -Wl,--as-needed
 )
 
-    -Wno-error=reorder
 if (DESKTOP_APP_SPECIAL_TARGET)
     target_compile_options(common_options
     INTERFACE
