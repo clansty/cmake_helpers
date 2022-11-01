@@ -6,14 +6,8 @@
 
 target_compile_options(common_options
 INTERFACE
-    $<IF:$<CONFIG:Debug>,,-fno-strict-aliasing>
-)
-
-target_compile_options_if_exists(common_options
-INTERFACE
-    -fstack-protector-all
-    -fstack-clash-protection
     -fPIC
+    $<$<NOT:$<CONFIG:Debug>>:-fno-strict-aliasing>
     -pipe
     -Wall
     -Wextra
@@ -27,14 +21,12 @@ INTERFACE
     -Wno-error=reorder
 )
 
-target_compile_definitions(common_options
-INTERFACE
-    $<IF:$<CONFIG:Debug>,,_FORTIFY_SOURCE=2>
-    _GLIBCXX_ASSERTIONS
-)
-
 target_link_options_if_exists(common_options
 INTERFACE
+    -Wno-alloc-size-larger-than # Qt + LTO
+    -Wno-stringop-overflow # Qt + LTO
+    -Wno-odr # Qt + LTO
+    -Wno-inline # OpenAL + LTO
     -pthread
     -Wl,--as-needed
 )
@@ -42,17 +34,16 @@ INTERFACE
 if (DESKTOP_APP_SPECIAL_TARGET)
     target_compile_options(common_options
     INTERFACE
-        $<IF:$<CONFIG:Debug>,,-Ofast>
+        $<$<NOT:$<CONFIG:Debug>>:-Ofast>
         -Werror
+        $<$<NOT:$<CONFIG:Debug>>:-g>
+        $<$<NOT:$<CONFIG:Debug>>:-flto>
     )
-
     target_link_options(common_options
     INTERFACE
-        $<IF:$<CONFIG:Debug>,,-Ofast>
+        $<$<NOT:$<CONFIG:Debug>>:-flto>
+        $<$<NOT:$<CONFIG:Debug>>:-fuse-linker-plugin>
     )
-
-    target_compile_options(common_options INTERFACE $<IF:$<CONFIG:Debug>,,-g -s>)
-    target_link_options(common_options INTERFACE $<IF:$<CONFIG:Debug>,,-g -s -fuse-linker-plugin>)
 endif()
 
 if (NOT DESKTOP_APP_USE_PACKAGED)
@@ -76,10 +67,27 @@ if (NOT DESKTOP_APP_USE_PACKAGED)
     target_link_options(common_options
     INTERFACE
         -rdynamic
-        -fwhole-program
+    )
+endif()
+
+if (NOT DESKTOP_APP_USE_PACKAGED OR DESKTOP_APP_SPECIAL_TARGET)
+    target_compile_options_if_exists(common_options
+    INTERFACE
+        -fstack-protector-all
+        -fstack-clash-protection
+    )
+    target_link_options(common_options
+    INTERFACE
+        $<$<CONFIG:Debug>:-fno-use-linker-plugin>
+        $<$<NOT:$<CONFIG:Debug>>:-fwhole-program>
         -Wl,-z,relro
         -Wl,-z,now
         # -pie # https://gitlab.gnome.org/GNOME/nautilus/-/issues/1601
+    )
+    target_compile_definitions(common_options
+    INTERFACE
+        $<$<NOT:$<CONFIG:Debug>>:_FORTIFY_SOURCE=2>
+        _GLIBCXX_ASSERTIONS
     )
 endif()
 
