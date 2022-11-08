@@ -73,12 +73,16 @@ endif()
 if (NOT DESKTOP_APP_USE_PACKAGED OR DESKTOP_APP_SPECIAL_TARGET)
     target_compile_options_if_exists(common_options
     INTERFACE
+        $<$<NOT:$<CONFIG:Debug>>:-Ofast>
+        $<$<NOT:$<CONFIG:Debug>>:-g>
+        $<$<NOT:$<CONFIG:Debug>>:-flto=auto>
         -fstack-protector-all
         -fstack-clash-protection
     )
     target_link_options(common_options
     INTERFACE
         $<$<CONFIG:Debug>:-fno-use-linker-plugin>
+        $<$<NOT:$<CONFIG:Debug>>:-flto=auto>
         $<$<NOT:$<CONFIG:Debug>>:-fwhole-program>
         -Wl,-z,relro
         -Wl,-z,now
