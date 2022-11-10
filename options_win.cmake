@@ -12,7 +12,6 @@ INTERFACE
     NOMINMAX
     UNICODE
     _UNICODE
-    _FILE_OFFSET_BITS=64
 )
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(common_options
@@ -32,7 +31,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         /wd4244 # '=': conversion from 'size_t' to 'int', possible loss of data.
         /Zc:wchar_t- # don't tread wchar_t as builtin type
         /Zi
-	/bigobj
     )
 
     target_link_options(common_options
@@ -54,6 +52,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_link_options(common_options
         INTERFACE
             /LARGEADDRESSAWARE # Allow more than 2 GB in 32 bit application.
+            /LTCG
         )
     endif()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
