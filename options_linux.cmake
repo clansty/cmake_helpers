@@ -64,17 +64,17 @@ if (NOT DESKTOP_APP_USE_PACKAGED)
             -nostdlib++
         )
     endif()
-    if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
-        target_link_options(common_options
-        INTERFACE
-            -fwhole-program
-        )
-    elseif (NOT DESKTOP_APP_SPECIAL_TARGET)
-        target_link_options(common_options
-        INTERFACE
-            -fno-use-linker-plugin
-        )
-    endif()
+    # if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+        # target_link_options(common_options
+        # INTERFACE
+            # -fwhole-program
+        # )
+    # elseif (NOT DESKTOP_APP_SPECIAL_TARGET)
+        # target_link_options(common_options
+        # INTERFACE
+            # -fno-use-linker-plugin
+        # )
+    # endif()
     target_link_options(common_options
     INTERFACE
         -rdynamic
@@ -93,6 +93,7 @@ if (NOT DESKTOP_APP_USE_PACKAGED OR DESKTOP_APP_SPECIAL_TARGET)
     target_link_options(common_options
     INTERFACE
         $<$<NOT:$<CONFIG:Debug>>:-flto=auto>
+        $<$<NOT:$<CONFIG:Debug>>:-fwhole-program>
         -Wl,-z,relro
         -Wl,-z,now
         # -pie # https://gitlab.gnome.org/GNOME/nautilus/-/issues/1601
