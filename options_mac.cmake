@@ -27,7 +27,6 @@ INTERFACE
     $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:-fobjc-weak>
     -fvisibility-inlines-hidden
     -fvisibility=hidden
-    -Wno-deprecated-declarations # temp for range-v3
     -Wno-unused-variable
     -Wno-unused-parameter
     -Wno-unused-function
@@ -37,6 +36,7 @@ INTERFACE
     -Wno-sign-compare
     -Wno-unknown-attributes
     -Wno-pragma-system-header-outside-header
+    -Wno-shorten-64-to-32
 )
 
 if (DESKTOP_APP_SPECIAL_TARGET)
