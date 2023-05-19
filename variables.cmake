@@ -20,13 +20,11 @@ if (DESKTOP_APP_SPECIAL_TARGET STREQUAL ""
 endif()
 
 option(DESKTOP_APP_LOTTIE_USE_CACHE "Use caching in lottie animations." ON)
-cmake_dependent_option(DESKTOP_APP_DISABLE_DBUS_INTEGRATION "Disable all code for D-Bus integration." OFF LINUX ON)
 cmake_dependent_option(DESKTOP_APP_DISABLE_X11_INTEGRATION "Disable all code for X11 integration." OFF LINUX ON)
 cmake_dependent_option(DESKTOP_APP_USE_ALLOCATION_TRACER "Use simple allocation tracer." OFF LINUX OFF)
 cmake_dependent_option(DESKTOP_APP_USE_PACKAGED_LAZY "Bundle recommended Qt plugins for self-contained packages." OFF LINUX OFF)
 option(DESKTOP_APP_USE_PACKAGED_FONTS "Use preinstalled fonts instead of bundled patched ones." OFF)
 option(DESKTOP_APP_USE_PACKAGED_RLOTTIE "Find rlottie using CMake instead of bundled patched one." OFF)
-option(DESKTOP_APP_DISABLE_SPELLCHECK "Disable spellcheck library." OFF)
 option(DESKTOP_APP_DISABLE_CRASH_REPORTS "Disable crash report generation." ${no_special_target})
 # option(DESKTOP_APP_DISABLE_AUTOUPDATE "Disable autoupdate." ${disable_autoupdate})
 option(DESKTOP_APP_USE_HUNSPELL_ONLY "Disable system spellchecker and use bundled Hunspell only. (For debugging purposes)" OFF)
@@ -44,10 +42,9 @@ if (APPLE AND NOT DEFINED DESKTOP_APP_MAC_ARCH)
 endif()
 
 set(add_hunspell_library 0)
-if ((WIN32
+if (WIN32
   OR (LINUX AND NOT DESKTOP_APP_USE_ENCHANT)
   OR DESKTOP_APP_USE_HUNSPELL_ONLY)
-  AND NOT DESKTOP_APP_DISABLE_SPELLCHECK)
     set(add_hunspell_library 1)
 endif()
 
