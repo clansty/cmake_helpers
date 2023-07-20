@@ -23,7 +23,6 @@ if (DESKTOP_APP_USE_PACKAGED)
         Qt::Network
         Qt::Svg
         $<TARGET_NAME_IF_EXISTS:Qt::DBus>
-        $<TARGET_NAME_IF_EXISTS:Qt::Qml>
         $<TARGET_NAME_IF_EXISTS:Qt::Quick>
         $<TARGET_NAME_IF_EXISTS:Qt::QuickWidgets>
         $<TARGET_NAME_IF_EXISTS:Qt::WaylandCompositor>
@@ -42,7 +41,6 @@ INTERFACE
     $<$<TARGET_EXISTS:Qt::OpenGLWidgets>:${qt_loc}/include/QtOpenGLWidgets>
     ${qt_loc}/include/QtSvg
     $<$<TARGET_EXISTS:Qt::DBus>:${qt_loc}/include/QtDBus>
-    $<$<TARGET_EXISTS:Qt::Qml>:${qt_loc}/include/QtQml>
     $<$<TARGET_EXISTS:Qt::Quick>:${qt_loc}/include/QtQuick>
     $<$<TARGET_EXISTS:Qt::QuickWidgets>:${qt_loc}/include/QtQuickWidgets>
     $<$<TARGET_EXISTS:Qt::WaylandCompositor>:${qt_loc}/include/QtWaylandCompositor>
@@ -67,7 +65,6 @@ INTERFACE
     QT_NETWORK_LIB
     QT_SVG_LIB
     $<$<TARGET_EXISTS:Qt::DBus>:QT_DBUS_LIB>
-    $<$<TARGET_EXISTS:Qt::Qml>:QT_QML_LIB>
     $<$<TARGET_EXISTS:Qt::Quick>:QT_QUICK_LIB>
     $<$<TARGET_EXISTS:Qt::QuickWidgets>:QT_QUICKWIDGETS_LIB>
     $<$<TARGET_EXISTS:Qt::WaylandCompositor>:QT_WAYLANDCOMPOSITOR_LIB>
@@ -108,23 +105,10 @@ if (TARGET Qt::OpenGLWidgets)
     )
 endif()
 
-if (TARGET Qt::Qml)
-    list(PREPEND common_qt_libs
-        qml/QtQml/WorkerScript/${qt_lib_prefix}workerscriptplugin
-        qml/QtQml/Models/${qt_lib_prefix}modelsplugin
-        qml/QtQml/Base/${qt_lib_prefix}qmlplugin
-        qml/QtQml/${qt_lib_prefix}qmlmetaplugin
-        lib/${qt_lib_prefix}Qt${QT_VERSION_MAJOR}QmlWorkerScript
-        lib/${qt_lib_prefix}Qt${QT_VERSION_MAJOR}QmlModels
-        lib/${qt_lib_prefix}Qt${QT_VERSION_MAJOR}Qml
-    )
-endif()
-
 if (TARGET Qt::Quick)
     list(PREPEND common_qt_libs
-        qml/QtQuick/Window/${qt_lib_prefix}quickwindowplugin
-        qml/QtQuick/${qt_lib_prefix}qtquick2plugin
         lib/${qt_lib_prefix}Qt${QT_VERSION_MAJOR}Quick
+        lib/${qt_lib_prefix}Qt${QT_VERSION_MAJOR}Qml
     )
 endif()
 
@@ -149,6 +133,14 @@ else()
 endif()
 
 set(qt_libs_list "")
+if (QT_VERSION_MAJOR GREATER_EQUAL 6)
+    list(APPEND qt_libs_list
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QWebpPlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QJpegPlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QGifPlugin_init>
+    )
+endif()
+
 if (WIN32)
     target_include_directories(external_qt SYSTEM
     INTERFACE
@@ -186,12 +178,15 @@ elseif (APPLE)
         plugins/tls/${qt_lib_prefix}qsecuretransportbackend
         plugins/networkinformation/${qt_lib_prefix}qscnetworkreachability
     )
+    list(APPEND qt_libs_list
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QSecureTransportBackendPlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QSCNetworkReachabilityNetworkInformationPlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin_resources_1>
+    )
     foreach (lib ${qt_libs})
         list(APPEND qt_libs_list "${qt_loc}/${lib}${qt_lib_suffix}")
     endforeach()
-    list(APPEND qt_libs_list
-        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin_resources_1>
-    )
 else()
     set(qt_libs
         plugins/platforminputcontexts/${qt_lib_prefix}composeplatforminputcontextplugin
@@ -204,6 +199,15 @@ else()
         lib/${qt_lib_prefix}Qt${QT_VERSION_MAJOR}XcbQpa
         ${common_qt_libs}
     )
+    list(APPEND qt_libs_list
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QXcbIntegrationPlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QXcbEglIntegrationPlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QXcbGlxIntegrationPlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QComposePlatformInputContextPlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QSvgIconPlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QGtk3ThemePlugin_init>
+        $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QTlsBackendOpenSSLPlugin_init>
+    )
     if (TARGET Qt::DBus)
         list(APPEND qt_libs
             plugins/platforminputcontexts/${qt_lib_prefix}ibusplatforminputcontextplugin
@@ -211,8 +215,12 @@ else()
             lib/${qt_lib_prefix}Qt${QT_VERSION_MAJOR}DBus
             lib/${qt_lib_prefix}Qt${QT_VERSION_MAJOR}Core
         )
+        list(APPEND qt_libs_list
+            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QIbusPlatformInputContextPlugin_init>
+            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QXdgDesktopPortalThemePlugin_init>
+        )
     endif()
-    if (NOT DESKTOP_APP_DISABLE_WAYLAND_INTEGRATION)
+    if (TARGET Qt::WaylandClient)
         list(PREPEND qt_libs
             plugins/platforms/${qt_lib_prefix}qwayland-generic
             plugins/platforms/${qt_lib_prefix}qwayland-egl
@@ -222,6 +230,13 @@ else()
             lib/${qt_lib_prefix}Qt${QT_VERSION_MAJOR}WaylandEglClientHwIntegration
             lib/${qt_lib_prefix}Qt${QT_VERSION_MAJOR}WaylandClient
         )
+        list(APPEND qt_libs_list
+            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QWaylandIntegrationPlugin_init>
+            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QWaylandEglPlatformIntegrationPlugin_init>
+            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QWaylandEglClientBufferPlugin_init>
+            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QWaylandXdgShellIntegrationPlugin_init>
+            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QWaylandBradientDecorationPlugin_init>
+        )
     endif()
     if (TARGET Qt::WaylandCompositor)
         list(PREPEND qt_libs
@@ -230,20 +245,6 @@ else()
         list(APPEND qt_libs_list
             $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::WaylandCompositor_resources_1>
         )
-        if (TARGET Qt::Quick)
-            list(PREPEND qt_libs
-                qml/QtWayland/Compositor/${qt_lib_prefix}qwaylandcompositorplugin
-                qml/QtWayland/Compositor/XdgShell/${qt_lib_prefix}waylandcompositorxdgshellplugin
-            )
-            list(APPEND qt_libs_list
-                $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::qwaylandcompositorplugin_init>
-                $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::WaylandCompositorXdgShell_init>
-                $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::WaylandCompositor_qmlcache>
-                $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::WaylandCompositor_resources_2>
-                $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::WaylandCompositor_resources_3>
-                $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::WaylandCompositorXdgShell_resources_1>
-            )
-        endif()
     endif()
     foreach (lib ${qt_libs})
         list(APPEND qt_libs_list "${qt_loc}/${lib}${qt_lib_suffix}")
@@ -259,26 +260,9 @@ if (QT_VERSION_MAJOR GREATER_EQUAL 6)
         $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::Widgets_resources_3>
     )
 
-    if (TARGET Qt::Qml)
-        list(APPEND qt_libs_list
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QmlMeta_init>
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::qmlplugin_init>
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::modelsplugin_init>
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::workerscriptplugin_init>
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QmlMeta_resources_1>
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::Qml_resources_1>
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QmlModels_resources_1>
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::QmlWorkerScript_resources_1>
-        )
-    endif()
-
     if (TARGET Qt::Quick)
         list(APPEND qt_libs_list
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::qtquick2plugin_init>
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::quickwindow_init>
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::Quick_resources_1>
             $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::Quick_resources_2>
-            $<TARGET_OBJECTS:Qt${QT_VERSION_MAJOR}::quickwindow_resources_1>
         )
     endif()
 endif()
@@ -321,7 +305,7 @@ if (LINUX)
         xcb-render-util
         xcb-keysyms
     )
-    if (NOT DESKTOP_APP_DISABLE_WAYLAND_INTEGRATION)
+    if (TARGET Qt::WaylandClient)
         target_link_libraries(external_qt
         INTERFACE
             desktop-app::linux_wayland_helper

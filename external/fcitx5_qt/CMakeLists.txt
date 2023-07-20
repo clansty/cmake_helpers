@@ -79,3 +79,23 @@ else()
         xkbcommon
     )
 endif()
+
+add_library(external_fcitx5_qt_init OBJECT)
+add_library(desktop-app::external_fcitx5_qt_init ALIAS external_fcitx5_qt_init)
+init_target(external_fcitx5_qt_init "(external)")
+
+nice_target_sources(external_fcitx5_qt_init ${CMAKE_CURRENT_SOURCE_DIR}
+PRIVATE
+    init.cpp
+)
+
+target_link_libraries(external_fcitx5_qt_init
+PRIVATE
+    desktop-app::external_qt
+)
+
+target_link_libraries(external_fcitx5_qt
+INTERFACE
+    external_fcitx5_qt_init
+    $<TARGET_OBJECTS:external_fcitx5_qt_init>
+)

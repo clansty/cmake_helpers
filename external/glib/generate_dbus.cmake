@@ -40,6 +40,7 @@ function(generate_dbus target_name interface_prefix namespace interface_file)
     COMMENT "Generating D-Bus C code for ${namespace} (${target_name})"
     DEPENDS
         ${DESKTOP_APP_GDBUSCODEGEN}
+        ${interface_file}
     )
 
     add_library(${target_name}_${namespace}_dbus STATIC)
@@ -52,6 +53,7 @@ function(generate_dbus target_name interface_prefix namespace interface_file)
     target_link_libraries(${target_name}_${namespace} INTERFACE ${target_name}_${namespace}_dbus)
     generate_gir(${target_name}_${namespace} ${namespace} Gio-2.0 ${target_name}_${namespace}_dbus)
     generate_cppgir(${target_name}_${namespace} ${CMAKE_CURRENT_BINARY_DIR}/gen/${target_name}_${namespace}.gir)
+    add_dependencies(${target_name}_${namespace}_cppgir ${target_name}_${namespace}_gir)
 
     get_target_property(target_type ${target_name} TYPE)
     if (${target_type} STREQUAL "INTERFACE_LIBRARY")
