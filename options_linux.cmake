@@ -67,9 +67,9 @@ if (NOT DESKTOP_APP_USE_PACKAGED)
         )
     endif()
     set(interprocedural_optimization_config $<TARGET_PROPERTY:INTERPROCEDURAL_OPTIMIZATION_$<UPPER_CASE:$<CONFIG>>>)
-    set(interprocedural_optimization_value_off -fno-use-linker-plugin -fuse-ld=lld)
     set(interprocedural_optimization_value_on -fwhole-program)
-    set(interprocedural_optimization_values ${interprocedural_optimization_value_on},$<IF:$<BOOL:{DESKTOP_APP_SPECIAL_TARGET}>,$<$<CONFIG:Debug>:${interprocedural_optimization_value_off}>,${interprocedural_optimization_value_off}>)
+    set(interprocedural_optimization_value_off -fuse-ld=lld -fno-use-linker-plugin)
+    set(interprocedural_optimization_values ${interprocedural_optimization_value_on},$<$<OR:$<NOT:$<BOOL:${DESKTOP_APP_SPECIAL_TARGET}>>,$<CONFIG:Debug>>:${interprocedural_optimization_value_off}>)
     target_link_options(common_options
     INTERFACE
         $<IF:$<NOT:$<STREQUAL:${interprocedural_optimization_config},>>,$<IF:$<BOOL:${interprocedural_optimization_config}>,${interprocedural_optimization_values}>,$<IF:$<BOOL:$<TARGET_PROPERTY:INTERPROCEDURAL_OPTIMIZATION>>,${interprocedural_optimization_values}>>
@@ -81,7 +81,7 @@ endif()
 if (NOT DESKTOP_APP_USE_PACKAGED OR DESKTOP_APP_SPECIAL_TARGET)
     target_compile_options_if_exists(common_options
     INTERFACE
-        $<$<NOT:$<CONFIG:Debug>>:-Ofast>
+        -fno-omit-frame-pointer
         $<$<NOT:$<CONFIG:Debug>>:-g>
         $<$<NOT:$<CONFIG:Debug>>:-flto=auto>
         -fstack-protector-all
@@ -94,11 +94,11 @@ if (NOT DESKTOP_APP_USE_PACKAGED OR DESKTOP_APP_SPECIAL_TARGET)
         $<$<NOT:$<CONFIG:Debug>>:-fwhole-program>
         -Wl,-z,relro
         -Wl,-z,now
-        # -pie # https://gitlab.gnome.org/GNOME/nautilus/-/issues/1601
+        -pie
     )
     target_compile_definitions(common_options
     INTERFACE
-        $<$<NOT:$<CONFIG:Debug>>:_FORTIFY_SOURCE=2>
+        $<$<NOT:$<CONFIG:Debug>>:_FORTIFY_SOURCE=3>
         _GLIBCXX_ASSERTIONS
     )
 endif()
