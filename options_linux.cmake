@@ -45,6 +45,9 @@ if (DESKTOP_APP_SPECIAL_TARGET)
     INTERFACE
         $<$<NOT:$<CONFIG:Debug>>:-flto=auto>
         $<$<NOT:$<CONFIG:Debug>>:-fwhole-program>
+        -Wl,-z,relro
+        -Wl,-z,now
+        -pie
     )
 endif()
 
@@ -82,16 +85,12 @@ if (NOT DESKTOP_APP_USE_PACKAGED OR DESKTOP_APP_SPECIAL_TARGET)
     target_compile_options_if_exists(common_options
     INTERFACE
         -fno-omit-frame-pointer
-        $<$<NOT:$<CONFIG:Debug>>:-g>
-        $<$<NOT:$<CONFIG:Debug>>:-flto=auto>
         -fstack-protector-all
         -fstack-clash-protection
         -fcf-protection
     )
     target_link_options(common_options
     INTERFACE
-        $<$<NOT:$<CONFIG:Debug>>:-flto=auto>
-        $<$<NOT:$<CONFIG:Debug>>:-fwhole-program>
         -Wl,-z,relro
         -Wl,-z,now
         -pie
