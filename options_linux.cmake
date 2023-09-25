@@ -45,9 +45,6 @@ if (DESKTOP_APP_SPECIAL_TARGET)
     INTERFACE
         $<$<NOT:$<CONFIG:Debug>>:-flto=auto>
         $<$<NOT:$<CONFIG:Debug>>:-fwhole-program>
-        -Wl,-z,relro
-        -Wl,-z,now
-        -pie
     )
 endif()
 
