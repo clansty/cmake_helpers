@@ -23,10 +23,10 @@ inputPath = sys.argv[1]
 if not os.path.exists(inputPath):
     error('File "' + inputPath + '" doesn\'t exist.')
 
-info = GetFileVersionInfo(inputPath, '\\')
-version = [ info['FileVersionMS'] // 65536, info['FileVersionMS'] % 65536, info['FileVersionLS'] // 65536, info['FileVersionLS'] % 65536 ]
-if (version != [10, 0, 22621, 1778]):
-    error('Bad "d3dcompiler_47.dll" version: ' + '.'.join(str(x) for x in version))
+# info = GetFileVersionInfo(inputPath, '\\')
+# version = [ info['FileVersionMS'] // 65536, info['FileVersionMS'] % 65536, info['FileVersionLS'] // 65536, info['FileVersionLS'] % 65536 ]
+# if (version != [10, 0, 22621, 1778]):
+#    error('Bad "d3dcompiler_47.dll" version: ' + '.'.join(str(x) for x in version))
 
 bufferSize = 1024 * 1024
 sha256 = hashlib.sha256()
