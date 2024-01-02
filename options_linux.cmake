@@ -100,13 +100,6 @@ if (NOT DESKTOP_APP_USE_PACKAGED OR DESKTOP_APP_SPECIAL_TARGET)
     )
 endif()
 
-if (NOT DESKTOP_APP_DISABLE_SCUDO)
-    target_link_libraries(common_options
-    INTERFACE
-        $<LINK_ONLY:desktop-app::external_scudo>
-    )
-endif()
-
 if (DESKTOP_APP_USE_ALLOCATION_TRACER)
     target_link_options(common_options
     INTERFACE
