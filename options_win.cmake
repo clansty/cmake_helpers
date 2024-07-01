@@ -41,8 +41,13 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         /wd4068 # Disable "warning C4068: unknown pragma"
         /wd4267 # 'initializing': conversion from 'size_t' to 'int', possible loss of data.
         /wd4244 # '=': conversion from 'size_t' to 'int', possible loss of data.
-        /Zc:wchar_t- # don't tread wchar_t as builtin type
         /Zi
+
+        # Taken from Qt 6.
+        # https://developercommunity.visualstudio.com/content/problem/139261/msvc-incorrectly-defines-cplusplus.html
+        # No support for the flag in upstream CMake as of 3.17.
+        # https://gitlab.kitware.com/cmake/cmake/issues/18837
+        /Zc:__cplusplus
     )
 
     target_link_options(common_options
